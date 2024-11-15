@@ -1,10 +1,11 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../provider/AuthProvider";
 
 const Register = () => {
 
-    const { createSignUp } = useContext(AuthContext)
+    const { createSignUp, userUpdateProfile } = useContext(AuthContext)
+    const [errorMsg, setErrorMsg] = useState('')
 
     const handleRegister = (e) => {
         e.preventDefault()
@@ -18,9 +19,17 @@ const Register = () => {
         createSignUp(email, password)
             .then((result) => {
                 console.log(result.user)
+                userUpdateProfile({ displayName: name, photoURL: photo })
+                    .then((result) => {
+                        console.log(result.user)
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
             })
             .catch((error) => {
                 console.log(error)
+                setErrorMsg(error.message)
             })
     }
     return (
@@ -54,7 +63,9 @@ const Register = () => {
                         </label>
                         <input type="password" name="password" placeholder="Enter your password" className="input input-bordered" required />
                         <label className="label">
-                            <a href="#" className="label-text-alt link link-hover">Forgot password?</a>
+                            {
+                                errorMsg && <p>{errorMsg}</p>
+                            }
                         </label>
                     </div>
                     <div className="form-control mt-6">
